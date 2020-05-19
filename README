@@ -1,7 +1,6 @@
 # Simple Port Scanner
 
 ## HELP Section:  USE -h OR --help
-
 ```
 wildscanner.py -h
 wildscanner.py --help
