@@ -1,5 +1,4 @@
-
- #!/usr/bin/env python3.7
+#!/usr/bin/env python3.7
 
 """Scans and Lists ports that are open on 1 System.
 """
