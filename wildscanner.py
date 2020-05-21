@@ -6,18 +6,16 @@
 import socket
 import sys
 import time
-import multiprocessing
+import argparse
+import threading
 
-def help_section():
-    print("\n***     Simple Port Scanner     ***\n")
-    print("HELP Section:    -h  --help\n")
-    print("Specify IP:  192.168.100.78\n")
-    print("Single PORT Scanning:   -p port\n")
-    print("Example: <script_name>.py 192.168.100.78 -p 80\n")
-    print("Multiple PORT Scanning:   -r start end\n")
-    print("Example: <script_name>.py 192.168.100.78 -r 24 80\n")
-    print("This will scan IP:192.168.100.78 Starting from port 24 to port 80.\n")
-    print("Scan ALL 65535 ports: -ALL. - HIGH CPU and MEMORY USAGE!!!\n")
+def get_args():
+    parser = argparse.ArgumentParser(description='Port Scanning.')
+    parser.add_argument('IP',help='Specify IP.')
+    parser.add_argument('-p',default=None,help='Specify the port.')
+    parser.add_argument('-r',default=None,help='Specify range of ports 1000-2000 or supply ALL to scan ALL(65535) ports.')
+    args = parser.parse_args()
+    return args
 
 def test_connection(host='google.com',port=80):
     try:
@@ -42,52 +40,35 @@ def scan(port,server_info):
         sock.close()
 
 def breaker(start,end,server_info):
-    processes = []
     for port in range(start,end+1):
-        p = multiprocessing.Process(target=scan, args= [port,server_info])
-        p.start()
-        processes.append(p)
-    for process in processes:
-        process.join()
+        x = threading.Thread(target=scan, args= (port,server_info,))
+        x.start()
 
 def main():
+    args = get_args()
     t1 = time.perf_counter()
-    args = sys.argv
-    argCheck = len(args)
-    if argCheck == 1 and args[1] != "-h" and args[1] != "--help":
-        print("\n***     WRONG ARGUMENT TRY -h or --help    ***\n")
-    if argCheck > 1:
-        if args[1] == "-h" or args[1] == "--help":
-            help_section()
-        if "-r" in args:
-            argRosR = args.index("-r")
-            serv = args[1]
-            start_port = int(args[argRosR + 1])
-            end_port = int(args[argRosR + 2])
-            print("[STARTING]   Connection Test Starting...")
-            test_connection()
-            breaker(start_port,end_port,serv)
-            t2 = time.perf_counter()
-            print(f"Finished in {t2-t1} seconds.")
-            sys.exit()
-        if "-p" in args:
-            argPosP = args.index("-p")
-            serv = args[1]
-            portS = int(args[argPosP + 1])
-            print("[STARTING]   Connection Test Starting...")
-            test_connection()
-            scan(portS,serv)
-            t2 = time.perf_counter()
-            print(f"Finished in {t2-t1} seconds.")
-            sys.exit()
-        if "-ALL" in args:
-            serv = args[1]
-            print("[STARTING]   Connection Test Starting...")
-            test_connection()
-            breaker(1,65535,serv)
-            t2 = time.perf_counter()
-            print(f"Finished in {t2-t1} seconds.")
-            sys.exit()
+    if args.p != None:
+        print("[STARTING]   Connection Test Starting...")
+        test_connection()
+        scan(int(args.p),args.IP)
+        t2 = time.perf_counter()
+        print(f"Finished in {t2-t1} seconds.")
+        sys.exit()
+    if args.r != None and args.r != "ALL":
+        portList = args.r.split("-")
+        print("[STARTING]   Connection Test Starting...")
+        test_connection()
+        breaker(int(portList[0]),int(portList[-1]),args.IP)
+        t2 = time.perf_counter()
+        print(f"Finished in {t2-t1} seconds.")
+        sys.exit()
+    if args.r == "ALL":
+        print("[STARTING]   Connection Test Starting...")
+        test_connection()
+        breaker(1,65535,args.IP)
+        t2 = time.perf_counter()
+        print(f"Finished in {t2-t1} seconds.")
+        sys.exit()
 
 if __name__=="__main__":
     main()

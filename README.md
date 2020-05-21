@@ -1,6 +1,6 @@
 # Simple Port Scanner
 
-## HELP Section:  USE -h OR --help
+## Help Section: -h OR --help
 ```
 wildscanner.py -h
 wildscanner.py --help
@@ -14,14 +14,14 @@ Example: To scan port 80 on IP 192.168.100.78:
 wildscanner.py 192.168.100.78 -p 80
 ```
 Multiple PORT Scanning:  -r start end
-
+The - is important!
 Example: To scan port 24-80 on IP 192.168.100.78:
 ```
-wildscanner.py 192.168.100.78 -r 24 80
+wildscanner.py 192.168.100.78 -r 24-80
 ```
-## -ALL		-HIGH CPU and MEMORY USAGE!!!
-
-Scan ALL 65535 ports: -ALL. - HIGH CPU and MEMORY USAGE!!!
+## ALL
+Scan ALL 65535 ports:
+ALL should be all UPPERCASE.
 ```
-wildscanner.py 192.168.100.78 -ALL
+wildscanner.py 192.168.100.78 -r ALL
 ```
